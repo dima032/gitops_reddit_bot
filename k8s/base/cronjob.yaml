@@ -20,7 +20,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: reddit-bot
-              image: dima032398485/reddit_bot:latest
+              image: dima032398485/reddit_bot:8ba8f4f5c881c4a9bf9d05f1915228965af6a13b
               imagePullPolicy: IfNotPresent
               env:
                 - name: TELEGRAM_REDDIT_BOT_TOKEN

@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: reddit-bot
+  labels:
+    app: reddit-bot
+spec:
+  schedule: "*/30 * * * *"  # runs every 30 minutes
+  concurrencyPolicy: Forbid  # avoid overlapping runs
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: reddit-bot
+        spec:
+          serviceAccountName: reddit-bot-sa
+          restartPolicy: OnFailure
+          containers:
+            - name: reddit-bot
+              image: dima032398485/reddit_bot:latest
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: TELEGRAM_REDDIT_BOT_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: reddit-bot-secrets
+                      key: tg_reddit_bot_token
+                - name: TELEGRAM_REDDIT_BOT_CHAT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: reddit-bot-secrets
+                      key: tg_reddit_bot_chat_id
+                - name: SUBREDDIT_LIST
+                  valueFrom:
+                    secretKeyRef:
+                      name: reddit-bot-secrets
+                      key: subreddit_list
+              lifecycle:
+                preStop:
+                  exec:
+                    command: ["/bin/sh", "-c", "sleep 1"]
+              resources:
+                requests:
+                  cpu: "100m"
+                  memory: "128Mi"
+                limits:
+                  cpu: "250m"
+                  memory: "256Mi"
+              volumeMounts:
+                - name: reddit-bot-data
+                  mountPath: /data
+          volumes:
+            - name: reddit-bot-data
+              persistentVolumeClaim:
+                claimName: reddit-bot-data

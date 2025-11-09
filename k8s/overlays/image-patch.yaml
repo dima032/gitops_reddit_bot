@@ -9,4 +9,4 @@ spec:
         spec:
           containers:
             - name: reddit-bot
-              image: dima032398485/reddit_bot:cfccdd4173c141fafb4b4bec82a4b1257b6438bf
+              image: dima032398485/reddit_bot:c6e84f4727ae4ea0fbde2cf090277e8fd8e8d7b1
